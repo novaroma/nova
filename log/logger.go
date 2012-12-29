@@ -6,17 +6,34 @@ import (
 	"io"
 )
 
+const (
+	DEBUG = iota
+	INFO
+	WARN
+	ERROR
+)
+
 type Logger struct {
 	Name   string
-	Output io.Writer
+	levels map[int]*logLevel
+}
+
+type logLevel struct {
+	level  int
+	output io.Writer
 }
 
 var loggerCache map[string]*Logger
 
 func CreateLogger(name string, out io.Writer) *Logger {
 	l := &Logger{
-		Name:   name,
-		Output: out,
+		Name: name,
+		levels: map[int]*logLevel{
+			DEBUG: &logLevel{DEBUG, out},
+			INFO:  &logLevel{INFO, out},
+			WARN:  &logLevel{WARN, out},
+			ERROR: &logLevel{ERROR, out},
+		},
 	}
 
 	if loggerCache == nil {
