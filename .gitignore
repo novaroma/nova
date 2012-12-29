@@ -20,3 +20,12 @@ _cgo_export.*
 _testmain.go
 
 *.exe
+
+# Sublime
+*.sublime*
+
+# Temp files and logs
+*~
+*.swp
+*.tmp
+*.log
