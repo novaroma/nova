@@ -4,6 +4,7 @@ package log
 
 import (
 	"io"
+	"os"
 )
 
 const (
@@ -12,6 +13,12 @@ const (
 	WARN
 	ERROR
 )
+
+var loggerCache map[string]*Logger
+
+func init() {
+	loggerCache = make(map[string]*Logger)
+}
 
 // A Logger is a configurable object which logs to a writer. It has one or more log levels; each of which can be 
 // configured individually.
@@ -26,8 +33,6 @@ type logLevel struct {
 	output io.Writer
 }
 
-var loggerCache map[string]*Logger
-
 // CreateLogger allocates a new logger object and adds it to the cache. 
 func CreateLogger(name string, out io.Writer) *Logger {
 	l := &Logger{
@@ -40,9 +45,15 @@ func CreateLogger(name string, out io.Writer) *Logger {
 		},
 	}
 
-	if loggerCache == nil {
-		loggerCache = make(map[string]*Logger)
-	}
 	loggerCache[name] = l
 	return l
+}
+
+// GetLogger gets the logger with the specified name from the cache. If it does not already exist, then it is created.
+func GetLogger(name string) *Logger {
+	if logger, ok := loggerCache[name]; ok {
+		return logger
+	}
+
+	return CreateLogger(name, os.Stdout)
 }
