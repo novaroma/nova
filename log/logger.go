@@ -13,7 +13,10 @@ const (
 	ERROR
 )
 
+// A Logger is a configurable object which logs to a writer. It has one or more log levels; each of which can be 
+// configured individually.
 type Logger struct {
+	// Name is a unique identifier for the Logger.
 	Name   string
 	levels map[int]*logLevel
 }
@@ -25,6 +28,7 @@ type logLevel struct {
 
 var loggerCache map[string]*Logger
 
+// CreateLogger allocates a new logger object and adds it to the cache. 
 func CreateLogger(name string, out io.Writer) *Logger {
 	l := &Logger{
 		Name: name,

@@ -34,3 +34,13 @@ func TestCreateLogger(t *testing.T) {
 		}
 	}
 }
+
+func BenchmarkCreateLogger(b *testing.B) {
+	b.StopTimer()
+	buf := bytes.NewBufferString("")
+	b.StartTimer()
+
+	for i := 0; i < b.N; i++ {
+		CreateLogger("test", buf)
+	}
+}
