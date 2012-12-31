@@ -1,2 +1,3 @@
+language: go
 install: go get -d -v -u && go build -v
 script: go test -test.bench=".*"
