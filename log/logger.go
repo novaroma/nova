@@ -56,6 +56,15 @@ func (logger *Logger) Logf(logLevel int, format string, v ...interface{}) {
 	}
 }
 
+func (logger *Logger) Logln(logLevel int, v ...interface{}) {
+	level := logger.levels[logLevel]
+	if level != nil {
+		level.logger.Println(v...)
+	} else {
+		log.Println(v...)
+	}
+}
+
 type logLevel struct {
 	level  int
 	logger *log.Logger

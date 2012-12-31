@@ -188,6 +188,49 @@ func BenchmarkStdLogf(b *testing.B) {
 	}
 }
 
+func TestLogln(t *testing.T) {
+	buf := bytes.NewBufferString("")
+	defer tearDown()
+
+	logger := CreateLogger("test", buf)
+	logger.Logln(LogLevelDebug, "this", "is", 2, complex(-1, 1))
+
+	actual := buf.String()
+	if !strings.Contains(actual, PrefixLogLevelDebug) {
+		t.Errorf("Expected the logger output '%s' to contain the prefix '%s'", actual, PrefixLogLevelDebug)
+	}
+
+	formatContent := "this is 2 (-1+1i)\n"
+	if !strings.Contains(actual, formatContent) {
+		t.Errorf("Expected the logger output '%s' to contain the content '%s'", actual, formatContent)
+	}
+}
+
+func BenchmarkLogln(b *testing.B) {
+	b.StopTimer()
+	logger := CreateLogger("test", ioutil.Discard)
+	defer func() {
+		b.StopTimer()
+		tearDown()
+		b.StartTimer()
+	}()
+	b.StartTimer()
+
+	for i := 0; i < b.N; i++ {
+		logger.Logln(LogLevelDebug, "ASDLFKAJDLFKAJSDF", 3)
+	}
+}
+
+func BenchmarkStdLogln(b *testing.B) {
+	b.StopTimer()
+	log.SetOutput(ioutil.Discard)
+	b.StartTimer()
+
+	for i := 0; i < b.N; i++ {
+		log.Println("ASDLFKAJDLFKAJSDF", 3)
+	}
+}
+
 func randomString() string {
 	buf := bytes.NewBufferString("")
 	numChars := rand.Intn(300)
