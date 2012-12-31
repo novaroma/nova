@@ -7,7 +7,6 @@ import (
 	"io/ioutil"
 	"log"
 	"math/rand"
-	"os"
 	"strings"
 	"testing"
 	"time"
@@ -151,14 +150,14 @@ func TestLogf(t *testing.T) {
 	defer tearDown()
 
 	logger := CreateLogger("test", buf)
-	logger.Logf(LogLevelDebug, "This is a test with %d numbers, a '%s' string, and a pointer %p", 4, "ASDFLKJASDLFKJADS", os.Stdout)
+	logger.Logf(LogLevelDebug, "This is a test with %d numbers, a '%s' string, and a complex %v", 4, "ASDFLKJASDLFKJADS", complex(-1, 1))
 
 	actual := buf.String()
 	if !strings.Contains(actual, PrefixLogLevelDebug) {
 		t.Errorf("Expected the logger output '%s' to contain the prefix '%s'", actual, PrefixLogLevelDebug)
 	}
 
-	formatContent := "This is a test with 4 numbers, a 'ASDFLKJASDLFKJADS' string, and a pointer 0xf84004e008"
+	formatContent := "This is a test with 4 numbers, a 'ASDFLKJASDLFKJADS' string, and a complex (-1+1i)"
 	if !strings.Contains(actual, formatContent) {
 		t.Errorf("Expected the logger output '%s' to contain the content '%s'", actual, formatContent)
 	}
