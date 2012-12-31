@@ -4,8 +4,11 @@ package log
 
 import (
 	"bytes"
+	"io/ioutil"
+	"log"
 	"math/rand"
 	"os"
+	"strings"
 	"testing"
 	"time"
 )
@@ -34,12 +37,6 @@ func TestCreateLogger(t *testing.T) {
 
 	if len(logger.levels) != 4 {
 		t.Errorf("Expected the logger to have %d log levels but had %d.", 4, len(logger.levels))
-	}
-
-	for _, level := range logger.levels {
-		if level.output != buf {
-			t.Error("Expected the log levels to have the correct output writer.")
-		}
 	}
 }
 
@@ -78,12 +75,6 @@ func TestGetLogger_NewLogger(t *testing.T) {
 	if actual == nil {
 		t.Error("Expected the returned logger to not be nil.")
 	}
-
-	for _, level := range actual.levels {
-		if level.output != os.Stdout {
-			t.Errorf("Expected the outputs of the log levels to be '%p' but was '%p'.", os.Stdout, level.output)
-		}
-	}
 }
 
 func BenchmarkGetLogger_NewLogger(b *testing.B) {
@@ -97,12 +88,104 @@ func BenchmarkGetLogger_NewLogger(b *testing.B) {
 }
 
 func BenchmarkGetLogger_LookupLogger(b *testing.B) {
-	for i := 0; i < b.N; i++ {
+	b.StopTimer()
+	name := randomString()
+	GetLogger(name)
+	defer func() {
 		b.StopTimer()
-		name := randomString()
+		tearDown()
 		b.StartTimer()
+	}()
+	b.StartTimer()
 
+	for i := 0; i < b.N; i++ {
 		GetLogger(name)
+	}
+}
+
+func TestLog(t *testing.T) {
+	buf := bytes.NewBufferString("")
+	defer tearDown()
+
+	logger := CreateLogger("test", buf)
+	logger.Log(LogLevelDebug, "ASDF", 1234, "pqf", "afg")
+
+	out := buf.String()
+	if !strings.Contains(out, PrefixLogLevelDebug) {
+		t.Errorf("Expected the logger output '%s' to contain the prefix '%s'.", out, PrefixLogLevelDebug)
+	}
+
+	formatContent := "ASDF1234pqfafg"
+	if !strings.Contains(out, formatContent) {
+		t.Errorf("Expected the logger output '%s' to contain the content '%s'.", out, formatContent)
+	}
+}
+
+func BenchmarkLog(b *testing.B) {
+	b.StopTimer()
+	logger := CreateLogger("test", ioutil.Discard)
+	defer func() {
+		b.StopTimer()
+		tearDown()
+		b.StartTimer()
+	}()
+	b.StartTimer()
+
+	for i := 0; i < b.N; i++ {
+		logger.Log(LogLevelDebug, "ASDLFKAJDLFKAJSDF")
+	}
+}
+
+func BenchmarkStdLog(b *testing.B) {
+	b.StopTimer()
+	log.SetOutput(ioutil.Discard)
+	b.StartTimer()
+
+	for i := 0; i < b.N; i++ {
+		log.Print("ASDLFKAJDLFKAJSDF")
+	}
+}
+
+func TestLogf(t *testing.T) {
+	buf := bytes.NewBufferString("")
+	defer tearDown()
+
+	logger := CreateLogger("test", buf)
+	logger.Logf(LogLevelDebug, "This is a test with %d numbers, a '%s' string, and a pointer %p", 4, "ASDFLKJASDLFKJADS", os.Stdout)
+
+	actual := buf.String()
+	if !strings.Contains(actual, PrefixLogLevelDebug) {
+		t.Errorf("Expected the logger output '%s' to contain the prefix '%s'", actual, PrefixLogLevelDebug)
+	}
+
+	formatContent := "This is a test with 4 numbers, a 'ASDFLKJASDLFKJADS' string, and a pointer 0xf84004e008"
+	if !strings.Contains(actual, formatContent) {
+		t.Errorf("Expected the logger output '%s' to contain the content '%s'", actual, formatContent)
+	}
+}
+
+func BenchmarkLogf(b *testing.B) {
+	b.StopTimer()
+	logger := CreateLogger("test", ioutil.Discard)
+	defer func() {
+		b.StopTimer()
+		tearDown()
+		b.StartTimer()
+	}()
+	b.StartTimer()
+
+	for i := 0; i < b.N; i++ {
+		logger.Logf(LogLevelDebug, "ASDLFKAJDLFKAJSDF%d", 3)
+	}
+}
+
+func BenchmarkStdLogf(b *testing.B) {
+	b.StopTimer()
+	log.SetOutput(ioutil.Discard)
+	b.StartTimer()
+
+	for i := 0; i < b.N; i++ {
+		log.Printf("ASDLFKAJDLFKAJSDF%d", 3)
 	}
 }
 

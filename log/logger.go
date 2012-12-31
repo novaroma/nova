@@ -4,14 +4,20 @@ package log
 
 import (
 	"io"
+	"log"
 	"os"
 )
 
 const (
-	DEBUG = iota
-	INFO
-	WARN
-	ERROR
+	LogLevelDebug = iota
+	LogLevelInfo
+	LogLevelWarn
+	LogLevelError
+
+	PrefixLogLevelDebug = "[DEBUG] "
+	PrefixLogLevelInfo  = "[INFO] "
+	PrefixLogLevelWarn  = "[WARN] "
+	PrefixLogLevelError = "[ERROR] "
 )
 
 var loggerCache map[string]*Logger
@@ -28,9 +34,31 @@ type Logger struct {
 	levels map[int]*logLevel
 }
 
+// Log writes to the log level given by the first argument; or to the standard logger if the given log level does not 
+// exist. Other arguments are handled in the manner of fmt.Print.
+func (logger *Logger) Log(logLevel int, v ...interface{}) {
+	level := logger.levels[logLevel]
+	if level != nil {
+		level.logger.Print(v...)
+	} else {
+		log.Print(v...)
+	}
+}
+
+// Logf writes to the log level given by the first argument; or to the standard logger if the given log level does not
+// exist. Other arguments are handled in the manner of fmt.Printf.
+func (logger *Logger) Logf(logLevel int, format string, v ...interface{}) {
+	level := logger.levels[logLevel]
+	if level != nil {
+		level.logger.Printf(format, v...)
+	} else {
+		log.Printf(format, v...)
+	}
+}
+
 type logLevel struct {
 	level  int
-	output io.Writer
+	logger *log.Logger
 }
 
 // CreateLogger allocates a new logger object and adds it to the cache. 
@@ -38,10 +66,10 @@ func CreateLogger(name string, out io.Writer) *Logger {
 	l := &Logger{
 		Name: name,
 		levels: map[int]*logLevel{
-			DEBUG: &logLevel{DEBUG, out},
-			INFO:  &logLevel{INFO, out},
-			WARN:  &logLevel{WARN, out},
-			ERROR: &logLevel{ERROR, out},
+			LogLevelDebug: &logLevel{LogLevelDebug, log.New(out, PrefixLogLevelDebug, log.LstdFlags)},
+			LogLevelInfo:  &logLevel{LogLevelInfo, log.New(out, PrefixLogLevelInfo, log.LstdFlags)},
+			LogLevelWarn:  &logLevel{LogLevelWarn, log.New(out, PrefixLogLevelWarn, log.LstdFlags)},
+			LogLevelError: &logLevel{LogLevelError, log.New(out, PrefixLogLevelError, log.LstdFlags)},
 		},
 	}
 
