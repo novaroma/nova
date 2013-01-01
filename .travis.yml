@@ -1,4 +1,4 @@
 language: go
 install: go get -d -v && go build -v
 script:
-  - go test -test.bench=".*" github.com/smkell/nova/log
+  - go test -test.bench=".*" github.com/novaroma/nova/log
