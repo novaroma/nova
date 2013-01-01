@@ -3,5 +3,5 @@
 package nova
 
 import (
-	_ "github.com/smkell/nova/log"
+	_ "github.com/novaroma/nova/log"
 )
