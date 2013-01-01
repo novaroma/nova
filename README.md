@@ -3,4 +3,4 @@
 
 A utility package which provides common tools.
 
-[![Build Status](https://travis-ci.org/smkell/nova.png?branch=development)](https://travis-ci.org/smkell/nova)
+[![Build Status](https://travis-ci.org/novaroma/nova.png?branch=development)](https://travis-ci.org/novaroma/nova)
