@@ -29,3 +29,6 @@ _testmain.go
 *.swp
 *.tmp
 *.log
+
+# Wiki 
+nova.wiki/*
