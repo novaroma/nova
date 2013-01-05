@@ -123,6 +123,52 @@ func (logger *Logger) Logf(logLevel int, format string, v ...interface{}) error 
 	return fmt.Errorf("No log level '%d' exists in this logger.", logLevel)
 }
 
+// Debugf writes to the debug log level. It handles arguments in the manner of fmt.Printf.
+// It does nothing if debug is disabled. It panics if the debug log level does not exist.
+func (logger *Logger) Debugf(format string, v ...interface{}) {
+	if logger.Logf(LogLevelDebug, format, v...) != nil {
+		panic("Logger must have Debug log level.")
+	}
+}
+
+// Infof writes to the info log level. It handles arguments in the manner of fmt.Printf.
+// It does nothing if info is disabled. It panics if the info log level does not exist.
+func (logger *Logger) Infof(format string, v ...interface{}) {
+	if logger.Logf(LogLevelInfo, format, v...) != nil {
+		panic("Logger must have Info log level.")
+	}
+}
+
+// Warnf writes to the warn log level. It handles arguments in the manner of fmt.Printf.
+// It does nothing if warn is disabled. It panics if the warn log level does not exist.
+func (logger *Logger) Warnf(format string, v ...interface{}) {
+	if logger.Logf(LogLevelWarn, format, v...) != nil {
+		panic("Logger must have Warn log level.")
+	}
+}
+
+// Errorf writes to the error log level. It handles arguments in the manner of fmt.Printf.
+// It does nothing if error is disabled. It panics if the error log level does not exist.
+func (logger *Logger) Errorf(format string, v ...interface{}) {
+	if logger.Logf(LogLevelError, format, v...) != nil {
+		panic("Logger must have Error log level.")
+	}
+}
+
+// Panicf writes to the error log level, then panics with the formatted string. It handles arguments in the manner of 
+// fmt.Printf.
+func (logger *Logger) Panicf(format string, v ...interface{}) {
+	s := fmt.Sprint(v...)
+	logger.Logf(LogLevelError, s)
+	panic(s)
+}
+
+// Fatalf writes to the error log level; then exits with os.Exit(1). It handles arguments in the manner of fmt.Printf.
+func (logger *Logger) Fatalf(format string, v ...interface{}) {
+	logger.Logf(LogLevelError, format, v...)
+	os.Exit(1)
+}
+
 // Logln writes to the log level given by the first argument. Other arguments are handled in the manner of fmt.Println.
 func (logger *Logger) Logln(logLevel int, v ...interface{}) error {
 	level := logger.levels[logLevel]
