@@ -1,4 +1,7 @@
 language: go
-install: go get -d -v && go build -v
+install: 
+  - cd ./v0
+  - go get -d -v && go build -v github.com/smkell
+  - cd ..
 script:
-  - go test -test.bench=".*" github.com/smkell/nova/log
+  - go test -test.bench=".*" github.com/smkell/nova/v0/log
