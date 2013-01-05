@@ -158,7 +158,7 @@ func (logger *Logger) Errorf(format string, v ...interface{}) {
 // Panicf writes to the error log level, then panics with the formatted string. It handles arguments in the manner of 
 // fmt.Printf.
 func (logger *Logger) Panicf(format string, v ...interface{}) {
-	s := fmt.Sprint(v...)
+	s := fmt.Sprintf(format, v...)
 	logger.Logf(LogLevelError, s)
 	panic(s)
 }
@@ -180,6 +180,52 @@ func (logger *Logger) Logln(logLevel int, v ...interface{}) error {
 	}
 
 	return fmt.Errorf("No log level '%d' exists in this logger.", logLevel)
+}
+
+// Debugln writes to the debug log level. It handles arguments in the manner of fmt.Println.
+// It does nothing if debug is disabled. It panics if the debug log level does not exist.
+func (logger *Logger) Debugln(v ...interface{}) {
+	if logger.Logln(LogLevelDebug, v...) != nil {
+		panic("Logger must have Debug log level.")
+	}
+}
+
+// Infoln writes to the info log level. It handles arguments in the manner of fmt.Println.
+// It does nothing if info is disabled. It panics if the info log level does not exist.
+func (logger *Logger) Infoln(v ...interface{}) {
+	if logger.Logln(LogLevelInfo, v...) != nil {
+		panic("Logger must have Info log level.")
+	}
+}
+
+// Warnln writes to the warn log level. It handles arguments in the manner of fmt.Println.
+// It does nothing if warn is disabled. It panics if the warn log level does not exist.
+func (logger *Logger) Warnln(v ...interface{}) {
+	if logger.Logln(LogLevelWarn, v...) != nil {
+		panic("Logger must have Warn log level.")
+	}
+}
+
+// Errorln writes to the error log level. It handles arguments in the manner of fmt.Println.
+// It does nothing if error is disabled. It panics if the error log level does not exist.
+func (logger *Logger) Errorln(v ...interface{}) {
+	if logger.Logln(LogLevelError, v...) != nil {
+		panic("Logger must have Error log level.")
+	}
+}
+
+// Panicln writes to the error log level, then panics with the formatted string. It handles arguments in the manner of 
+// fmt.Println.
+func (logger *Logger) Panicln(v ...interface{}) {
+	s := fmt.Sprintln(v...)
+	logger.Logln(LogLevelError, s)
+	panic(s)
+}
+
+// Fatalln writes to the error log level; then exits with os.Exit(1). It handles arguments in the manner of fmt.Println.
+func (logger *Logger) Fatalln(v ...interface{}) {
+	logger.Logln(LogLevelError, v...)
+	os.Exit(1)
 }
 
 type logLevel struct {
