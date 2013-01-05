@@ -56,6 +56,7 @@ func (logger *Logger) Logf(logLevel int, format string, v ...interface{}) {
 	}
 }
 
+// Logln writes to the log level given by the first argument. Other arguments are handled in the manner of fmt.Println.
 func (logger *Logger) Logln(logLevel int, v ...interface{}) {
 	level := logger.levels[logLevel]
 	if level != nil {
