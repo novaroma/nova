@@ -35,9 +35,17 @@ type Logger struct {
 	levels map[int]*logLevel
 }
 
+// DisableLevel causes the log level specified to not output.
 func (logger *Logger) DisableLevel(l int) {
 	if level, ok := logger.levels[l]; ok {
 		level.enabled = false
+	}
+}
+
+// EnableLevel causes the log level specified to resume output.
+func (logger *Logger) EnableLevel(l int) {
+	if level, ok := logger.levels[l]; ok {
+		level.enabled = true
 	}
 }
 
