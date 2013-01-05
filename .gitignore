@@ -30,5 +30,5 @@ _testmain.go
 *.tmp
 *.log
 
-# Wiki
+# Wiki 
 nova.wiki/*
