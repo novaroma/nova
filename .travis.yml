@@ -1,0 +1,7 @@
+language: go
+install: 
+  - cd ./v0
+  - go get -d -v && go build -v
+  - cd ..
+script:
+  - go test -test.bench=".*" github.com/novaroma/nova/v0/log
