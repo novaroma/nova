@@ -3,5 +3,5 @@
 package nova
 
 import (
-	_ "github.com/novaroma/nova/log"
+	_ "github.com/novaroma/nova/v0/log"
 )

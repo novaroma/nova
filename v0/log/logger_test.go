@@ -120,6 +120,18 @@ func TestLog(t *testing.T) {
 	}
 }
 
+func TestLog_MissingLevel(t *testing.T) {
+	buf := bytes.NewBufferString("")
+	defer tearDown()
+
+	logger := CreateLogger("test", buf)
+	err := logger.Log(42, "ASDF", 1234, "pqf", "afg")
+
+	if err == nil {
+		t.Errorf("Expected an error to be returend but was nil.")
+	}
+}
+
 func BenchmarkLog(b *testing.B) {
 	b.StopTimer()
 	logger := CreateLogger("test", ioutil.Discard)
@@ -160,6 +172,18 @@ func TestLogf(t *testing.T) {
 	formatContent := "This is a test with 4 numbers, a 'ASDFLKJASDLFKJADS' string, and a complex (-1+1i)"
 	if !strings.Contains(actual, formatContent) {
 		t.Errorf("Expected the logger output '%s' to contain the content '%s'", actual, formatContent)
+	}
+}
+
+func TestLogf_MissingLevel(t *testing.T) {
+	buf := bytes.NewBufferString("")
+	defer tearDown()
+
+	logger := CreateLogger("test", buf)
+	err := logger.Logf(42, "This is a test with %d numbers, a '%s' string, and a complex %v", 4, "ASDFLKJASDLFKJADS", complex(-1, 1))
+
+	if err == nil {
+		t.Errorf("Expected an error to be returend but was nil.")
 	}
 }
 
@@ -206,6 +230,18 @@ func TestLogln(t *testing.T) {
 	}
 }
 
+func TestLogln_MissingLevel(t *testing.T) {
+	buf := bytes.NewBufferString("")
+	defer tearDown()
+
+	logger := CreateLogger("test", buf)
+	err := logger.Logln(42, "this", "is", 2, complex(-1, 1))
+
+	if err == nil {
+		t.Errorf("Expected an error to be returend but was nil.")
+	}
+}
+
 func BenchmarkLogln(b *testing.B) {
 	b.StopTimer()
 	logger := CreateLogger("test", ioutil.Discard)
@@ -228,6 +264,22 @@ func BenchmarkStdLogln(b *testing.B) {
 
 	for i := 0; i < b.N; i++ {
 		log.Println("ASDLFKAJDLFKAJSDF", 3)
+	}
+}
+
+func TestDisableLevel(t *testing.T) {
+	buf := bytes.NewBufferString("")
+	defer tearDown()
+
+	logger := CreateLogger("test", buf)
+	logger.DisableLevel(LogLevelDebug)
+
+	logger.Debug("This is a test.")
+
+	out := buf.String()
+
+	if out != "" {
+		t.Errorf("Expected the output to be '%s' but was '%s'.", "", out)
 	}
 }
 
